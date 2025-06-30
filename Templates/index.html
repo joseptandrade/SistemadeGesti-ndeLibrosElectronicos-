@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca Digital - Gestión Completa</title>
+    <style>
+        /* Estilos generales para el cuerpo y encabezados */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f9;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1, h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        /* Estilos para formularios */
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        input[type="text"],
+        input[type="number"],
+        select {
+            display: block;
+            margin: 10px 0;
+            padding: 8px;
+            width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        /* Estilos para la tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        /* Estilos para mensajes de estado */
+        .status-message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        .loading-indicator {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        /* Validación en tiempo real */
+        input:invalid {
+            border-color: #dc3545;
+        }
+        .report-section {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .report-section p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>📚 Sistema de Gestión de Biblioteca Digital</h1>
+
+    <div id="loading" class="loading-indicator" style="display:none;">
+        Procesando...
+    </div>
+    <div id="result" class="status-message"></div>
+
+    <!-- GESTIÓN DE LIBROS -->
+    <h2>Gestión de Libros</h2>
+
+    <div>
+        <h3>Agregar Nuevo Libro</h3>
+        <form id="formAddLibro">
+            <input type="number" id="libroId" placeholder="ID del libro" min="1" required oninput="validateNumber(this)">
+            <input type="text" id="libroTitulo" placeholder="Título" minlength="2" required 
+                   pattern="[A-Za-zÁ-Úá-úñÑ ]+" 
+                   title="Solo letras y espacios">
+            <input type="text" id="libroAutor" placeholder="Autor" minlength="2" required
+                   pattern="[A-Za-zÁ-Úá-úñÑ ]+" 
+                   title="Solo letras y espacios">
+            <select id="libroEstado" required>
+                <option value="disponible">Disponible</option>
+                <option value="prestado">Prestado</option>
+            </select>
+            <button type="submit">Agregar Libro</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Buscar Libro por ID</h3>
+        <form id="formBuscarLibro">
+            <input type="number" id="libroIdBuscar" placeholder="ID del libro" required>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Lista de Libros</h3>
+        <table id="tablaLibros">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Título</th>
+                    <th>Autor</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody id="librosBody"></tbody>
+        </table>
+    </div>
+
+    <!-- GESTIÓN DE USUARIOS -->
+    <h2>Gestión de Usuarios</h2>
+
+    <div>
+        <h3>Agregar Nuevo Usuario</h3>
+        <form id="formAddUsuario">
+            <input type="number" id="usuarioId" placeholder="ID del usuario" min="1" required oninput="validateNumber(this)">
+            <input type="text" id="usuarioNombre" placeholder="Nombre del usuario" minlength="2" required
+                   pattern="[A-Za-zÁ-Úá-úñÑ ]+" 
+                   title="Solo letras y espacios">
+            <button type="submit">Agregar Usuario</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Lista de Usuarios</h3>
+        <table id="tablaUsuarios">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="usuariosBody"></tbody>
+        </table>
+    </div>
+
+    <!-- GESTIÓN DE PRÉSTAMOS -->
+    <h2>Gestión de Préstamos</h2>
+
+    <div>
+        <h3>Registrar Nuevo Préstamo</h3>
+        <form id="formAddPrestamo">
+            <input type="number" id="prestamoId" placeholder="ID del préstamo" min="1" required oninput="validateNumber(this)">
+            <input type="number" id="prestamoLibroId" placeholder="ID del libro" min="1" required oninput="validateNumber(this)">
+            <input type="number" id="prestamoUsuarioId" placeholder="ID del usuario" min="1" required oninput="validateNumber(this)">
+            <select id="prestamoEstado" required>
+                <option value="vigente">Vigente</option>
+                <option value="devuelto">Devuelto</option>
+            </select>
+            <button type="submit">Registrar Préstamo</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Registrar Devolución</h3>
+        <form id="formReturnPrestamo">
+            <input type="number" id="prestamoIdDevolver" placeholder="ID del préstamo a devolver" min="1" required oninput="validateNumber(this)">
+            <button type="submit">Marcar como Devuelto</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Filtrar Préstamos</h3>
+        <form id="formFilterPrestamos">
+            <select id="prestamoEstadoFiltrar" required>
+                <option value="">Todos</option>
+                <option value="vigente">Vigente</option>
+                <option value="devuelto">Devuelto</option>
+            </select>
+            <button type="submit">Filtrar Préstamos</button>
+        </form>
+    </div>
+
+<div>
+    <h3>Lista de Préstamos</h3>
+    <table id="tablaPrestamos">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Libro ID</th>
+                <th>Usuario ID</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody id="prestamosBody"></tbody>
+    </table>
+</div>
+
+
+    <!-- REPORTES -->
+    <h2>Reportes</h2>
+
+    <div class="report-section">
+        <h3>Reporte de Libros</h3>
+        <p>Disponibles: <span id="reporteLibrosDisponibles">0</span></p>
+        <p>Prestados: <span id="reporteLibrosPrestados">0</span></p>
+        <button onclick="generarReporteLibros()">Actualizar Reporte de Libros</button>
+    </div>
+
+    <div class="report-section">
+        <h3>Usuarios con Préstamos Activos</h3>
+        <ul id="reporteUsuariosActivos">
+            <li>No hay usuarios con préstamos activos.</li>
+        </ul>
+        <button onclick="generarReporteUsuariosActivos()">Actualizar Reporte de Usuarios Activos</button>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:8080';
+        const loadingDiv = document.getElementById('loading');
+        const resultDiv = document.getElementById('result');
+
+        function showLoading() {
+            loadingDiv.style.display = 'block';
+            resultDiv.innerHTML = ''; // Clear previous messages
+        }
+
+        function hideLoading() {
+            loadingDiv.style.display = 'none';
+        }
+
+        function showMessage(type, message) {
+            resultDiv.className = `status-message ${type}`;
+            resultDiv.innerHTML = message;
+        }
+
+        // Validación en tiempo real para campos numéricos
+        function validateNumber(input) {
+            if (input.value < 1) {
+                input.setCustomValidity('El ID debe ser mayor que 0');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+
+        // --- Carga inicial de datos ---
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarLibros();
+            cargarUsuarios();
+            cargarPrestamos();
+            generarReporteLibros();
+            generarReporteUsuariosActivos();
+        });
+
+        // ====================================================================
+        // FUNCIONES PARA LIBROS (EXISTENTES, CON PEQUEÑOS AJUSTES DE ID)
+        // ====================================================================
+
+        async function cargarLibros() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE_URL}/libros`);
+                if (!response.ok) {
+                    if (response.status === 204) { // No Content
+                        document.getElementById('librosBody').innerHTML = `<tr><td colspan="5">No hay libros registrados</td></tr>`;
+                        return;
+                    }
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                const libros = await response.json();
+                const librosBody = document.getElementById('librosBody');
+                librosBody.innerHTML = '';
+                libros.forEach(libro => {
+                    librosBody.innerHTML += `
+                        <tr>
+                            <td>${libro.id}</td>
+                            <td>${libro.titulo}</td>
+                            <td>${libro.autor}</td>
+                            <td>${libro.estado || 'disponible'}</td>
+                            <td>
+                                <button onclick="eliminarLibro(${libro.id})">Eliminar</button>
+                                <button onclick="editarLibro(${libro.id})">Editar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                document.getElementById('librosBody').innerHTML = `<tr><td colspan="5">Error al cargar libros: ${error.message || 'Error desconocido'}</td></tr>`;
+                console.error('Error loading books:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.getElementById('formAddLibro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const id = document.getElementById('libroId').value;
+            const titulo = document.getElementById('libroTitulo').value;
+            const autor = document.getElementById('libroAutor').value;
+            const estado = document.getElementById('libroEstado').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/libros`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id), titulo, autor, estado }),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al agregar el libro: ${response.statusText}`);
+                }
+                showMessage('success', 'Libro agregado correctamente');
+                document.getElementById('formAddLibro').reset();
+                cargarLibros();
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        document.getElementById('formBuscarLibro').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const id = document.getElementById('libroIdBuscar').value;
+            if (!id || isNaN(id)) {
+                showMessage('error', 'ID de libro inválido');
+                hideLoading();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/libros/${id}`);
+                if (!response.ok) {
+                    throw new Error(`Libro no encontrado (ID: ${id})`);
+                }
+                const libro = await response.json();
+                showMessage('success', `
+                    <h3>Libro Encontrado:</h3>
+                    <p>ID: ${libro.id}</p>
+                    <p>Título: ${libro.titulo}</p>
+                    <p>Autor: ${libro.autor}</p>
+                    <p>Estado: ${libro.estado}</p>
+                `);
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        async function eliminarLibro(id) {
+            if (!confirm(`¿Eliminar libro ID ${id}? Esta acción no se puede deshacer.`)) return;
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE_URL}/libros/${id}`, { method: 'DELETE' });
+                if (!response.ok) {
+                    throw new Error(`Error al eliminar: ${response.statusText}`);
+                }
+                showMessage('success', 'Libro eliminado exitosamente');
+                cargarLibros();
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function editarLibro(id) {
+            showLoading();
+            try {
+                const currentBook = await fetch(`${API_BASE_URL}/libros/${id}`).then(res => res.ok ? res.json() : null);
+                if (!currentBook) {
+                    throw new Error('No se pudo cargar el libro para editar');
+                }
+                const titulo = prompt("Nuevo título:", currentBook.titulo);
+                if (titulo === null) return; // User cancelled
+                const autor = prompt("Nuevo autor:", currentBook.autor);
+                if (autor === null) return;
+                const estado = prompt("Nuevo estado (disponible/prestado):", currentBook.estado);
+                if (estado === null) return;
+
+                const libroActualizado = { id: id, titulo, autor, estado };
+                const response = await fetch(`${API_BASE_URL}/libros/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(libroActualizado)
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al actualizar el libro: ${response.statusText}`);
+                }
+                showMessage('success', 'Libro actualizado exitosamente');
+                cargarLibros();
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ====================================================================
+        // NUEVAS FUNCIONES PARA USUARIOS
+        // ====================================================================
+
+        async function cargarUsuarios() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE_URL}/usuarios`);
+                if (!response.ok) {
+                    if (response.status === 204) { // No Content
+                        document.getElementById('usuariosBody').innerHTML = `<tr><td colspan="3">No hay usuarios registrados</td></tr>`;
+                        return;
+                    }
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                const usuarios = await response.json();
+                const usuariosBody = document.getElementById('usuariosBody');
+                usuariosBody.innerHTML = '';
+                usuarios.forEach(usuario => {
+                    usuariosBody.innerHTML += `
+                        <tr>
+                            <td>${usuario.id}</td>
+                            <td>${usuario.nombre}</td>
+                            <td>
+                                <button onclick="eliminarUsuario(${usuario.id})">Eliminar</button>
+                                <button onclick="editarUsuario(${usuario.id})">Editar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                document.getElementById('usuariosBody').innerHTML = `<tr><td colspan="3">Error al cargar usuarios: ${error.message || 'Error desconocido'}</td></tr>`;
+                console.error('Error loading users:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.getElementById('formAddUsuario').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const id = document.getElementById('usuarioId').value;
+            const nombre = document.getElementById('usuarioNombre').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/usuarios`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id), nombre }),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al agregar el usuario: ${response.statusText}`);
+                }
+                showMessage('success', 'Usuario agregado correctamente');
+                document.getElementById('formAddUsuario').reset();
+                cargarUsuarios();
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        async function eliminarUsuario(id) {
+            if (!confirm(`¿Eliminar usuario ID ${id}? Esta acción no se puede deshacer.`)) return;
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE_URL}/usuarios/${id}`, { method: 'DELETE' });
+                if (!response.ok) {
+                    throw new Error(`Error al eliminar: ${response.statusText}`);
+                }
+                showMessage('success', 'Usuario eliminado exitosamente');
+                cargarUsuarios();
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function editarUsuario(id) {
+            showLoading();
+            try {
+                // Nota: La API de usuarios no tiene un GET por ID directo en tu main.go,
+                // pero podemos simularlo buscando en la lista cargada o pidiendo el nombre.
+                // Para simplificar, pediremos el nombre directamente.
+                const nombre = prompt("Nuevo nombre del usuario:");
+                if (nombre === null) return; // User cancelled
+
+                const usuarioActualizado = { id: id, nombre: nombre };
+                const response = await fetch(`${API_BASE_URL}/usuarios/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(usuarioActualizado)
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al actualizar el usuario: ${response.statusText}`);
+                }
+                showMessage('success', 'Usuario actualizado exitosamente');
+                cargarUsuarios();
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // ====================================================================
+        // NUEVAS FUNCIONES PARA PRÉSTAMOS
+        // ====================================================================
+
+        async function cargarPrestamos(estado = '') {
+            showLoading();
+            try {
+                let url = `${API_BASE_URL}/prestamos`;
+                if (estado) {
+                    url = `${API_BASE_URL}/prestamos/filter?estado=${estado}`;
+                }
+                const response = await fetch(url);
+                if (!response.ok) {
+                    if (response.status === 204) { // No Content
+                        document.getElementById('prestamosBody').innerHTML = `<tr><td colspan="6">No hay préstamos registrados</td></tr>`;
+                        return;
+                    }
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+                const prestamos = await response.json();
+                const prestamosBody = document.getElementById('prestamosBody');
+                prestamosBody.innerHTML = '';
+                prestamos.forEach(prestamo => {
+                    const fecha = new Date(prestamo.fecha).toLocaleDateString();
+                    prestamosBody.innerHTML += `
+                        <tr>
+                            <td>${prestamo.id}</td>
+                            <td>${prestamo.libro_id}</td>
+                            <td>${prestamo.usuario_id}</td>
+                            <td>${fecha}</td>
+                            <td>${prestamo.estado}</td>
+                        </tr>
+                    `;
+                });
+            } catch (error) {
+                document.getElementById('prestamosBody').innerHTML = `<tr><td colspan="6">Error al cargar préstamos: ${error.message || 'Error desconocido'}</td></tr>`;
+                console.error('Error loading loans:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        document.getElementById('formAddPrestamo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const id = document.getElementById('prestamoId').value;
+            const libroId = document.getElementById('prestamoLibroId').value;
+            const usuarioId = document.getElementById('prestamoUsuarioId').value;
+            const estado = document.getElementById('prestamoEstado').value;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/prestamos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: parseInt(id), libro_id: parseInt(libroId), usuario_id: parseInt(usuarioId), estado }),
+                });
+                if (!response.ok) {
+                    throw new Error(`Error al registrar el préstamo: ${response.statusText}`);
+                }
+                showMessage('success', 'Préstamo registrado correctamente');
+                document.getElementById('formAddPrestamo').reset();
+                cargarPrestamos();
+                generarReporteLibros(); // Update book report as a book might become 'prestado'
+                generarReporteUsuariosActivos(); // Update active user loans
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        document.getElementById('formReturnPrestamo').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoading();
+            const id = document.getElementById('prestamoIdDevolver').value;
+            if (!id || isNaN(id)) {
+                showMessage('error', 'ID de préstamo inválido');
+                hideLoading();
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/prestamos/return/${id}`, { method: 'PUT' });
+                if (!response.ok) {
+                    throw new Error(`Error al devolver el préstamo: ${response.statusText}`);
+                }
+                showMessage('success', 'Préstamo marcado como devuelto');
+                document.getElementById('formReturnPrestamo').reset();
+                cargarPrestamos();
+                generarReporteLibros(); // Update book report as a book might become 'disponible'
+                generarReporteUsuariosActivos(); // Update active user loans
+            } catch (error) {
+                showMessage('error', error.message);
+            } finally {
+                hideLoading();
+            }
+        });
+
+        document.getElementById('formFilterPrestamos').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const estado = document.getElementById('prestamoEstadoFiltrar').value;
+            cargarPrestamos(estado);
+        });
+
+        // ====================================================================
+        // NUEVAS FUNCIONES PARA REPORTES
+        // ====================================================================
+
+        async function generarReporteLibros() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE_URL}/reportes/libros`);
+                if (!response.ok) {
+                    throw new Error(`Error al obtener reporte de libros: ${response.statusText}`);
+                }
+                const reporte = await response.json();
+                document.getElementById('reporteLibrosDisponibles').textContent = reporte.disponibles;
+                document.getElementById('reporteLibrosPrestados').textContent = reporte.prestados;
+            } catch (error) {
+                showMessage('error', `Error en reporte de libros: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function generarReporteUsuariosActivos() {
+            showLoading();
+            try {
+                const response = await fetch(`${API_BASE_URL}/reportes/usuarios/prestamos-activos`);
+                if (!response.ok) {
+                    if (response.status === 204) { // No Content
+                        document.getElementById('reporteUsuariosActivos').innerHTML = `<li>No hay usuarios con préstamos activos.</li>`;
+                        return;
+                    }
+                    throw new Error(`Error al obtener reporte de usuarios activos: ${response.statusText}`);
+                }
+                const usuariosActivos = await response.json();
+                const ul = document.getElementById('reporteUsuariosActivos');
+                ul.innerHTML = '';
+                if (usuariosActivos.length === 0) {
+                    ul.innerHTML = `<li>No hay usuarios con préstamos activos.</li>`;
+                } else {
+                    usuariosActivos.forEach(usuario => {
+                        ul.innerHTML += `<li>ID: ${usuario.id}, Nombre: ${usuario.nombre}</li>`;
+                    });
+                }
+            } catch (error) {
+                showMessage('error', `Error en reporte de usuarios activos: ${error.message}`);
+            } finally {
+                hideLoading();
+            }
+        }
+
+    </script>
+</body>
+</html>
