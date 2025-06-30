@@ -296,9 +296,9 @@
             generarReporteUsuariosActivos();
         });
 
-        // ====================================================================
-        // FUNCIONES PARA LIBROS (EXISTENTES, CON PEQUEÑOS AJUSTES DE ID)
-        // ====================================================================
+        // ======================
+        // FUNCIONES PARA LIBROS 
+        // ======================
 
         async function cargarLibros() {
             showLoading();
@@ -441,9 +441,9 @@
             }
         }
 
-        // ====================================================================
-        // NUEVAS FUNCIONES PARA USUARIOS
-        // ====================================================================
+        // ===========================
+        //  FUNCIONES PARA USUARIOS
+        // ===========================
 
         async function cargarUsuarios() {
             showLoading();
@@ -524,9 +524,8 @@
         async function editarUsuario(id) {
             showLoading();
             try {
-                // Nota: La API de usuarios no tiene un GET por ID directo en tu main.go,
-                // pero podemos simularlo buscando en la lista cargada o pidiendo el nombre.
-                // Para simplificar, pediremos el nombre directamente.
+                
+                // Pediremos el nombre directamente.
                 const nombre = prompt("Nuevo nombre del usuario:");
                 if (nombre === null) return; // User cancelled
 
@@ -548,9 +547,9 @@
             }
         }
 
-        // ====================================================================
-        // NUEVAS FUNCIONES PARA PRÉSTAMOS
-        // ====================================================================
+        // ===========================
+        //  FUNCIONES PARA PRÉSTAMOS
+        // ===========================
 
         async function cargarPrestamos(estado = '') {
             showLoading();
@@ -610,8 +609,8 @@
                 showMessage('success', 'Préstamo registrado correctamente');
                 document.getElementById('formAddPrestamo').reset();
                 cargarPrestamos();
-                generarReporteLibros(); // Update book report as a book might become 'prestado'
-                generarReporteUsuariosActivos(); // Update active user loans
+                generarReporteLibros(); // Actualiza el informe del libro a medida que el libro se va cambiando su estado 'prestado'
+                generarReporteUsuariosActivos(); // Actualizar préstamos de usuarios activos
             } catch (error) {
                 showMessage('error', error.message);
             } finally {
@@ -636,8 +635,8 @@
                 showMessage('success', 'Préstamo marcado como devuelto');
                 document.getElementById('formReturnPrestamo').reset();
                 cargarPrestamos();
-                generarReporteLibros(); // Update book report as a book might become 'disponible'
-                generarReporteUsuariosActivos(); // Update active user loans
+                generarReporteLibros(); // Actualiza el informe del libro a medida que el libro se va cambiando su estado 'disponible'
+                generarReporteUsuariosActivos(); // Actualizar préstamos de usuarios activos
             } catch (error) {
                 showMessage('error', error.message);
             } finally {
@@ -651,9 +650,9 @@
             cargarPrestamos(estado);
         });
 
-        // ====================================================================
-        // NUEVAS FUNCIONES PARA REPORTES
-        // ====================================================================
+        // ===========================
+        //  FUNCIONES PARA REPORTES
+        // ===========================
 
         async function generarReporteLibros() {
             showLoading();

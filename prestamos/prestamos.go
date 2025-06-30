@@ -1,3 +1,7 @@
+//PROYECTO: Sistema de Gestión de Biblioteca Digital
+// FECHA: 28 de junio de 2025
+// DESARROLLADOR: Jose Andrade Zalamea
+
 package prestamos
 
 import (

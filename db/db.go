@@ -1,3 +1,7 @@
+//PROYECTO: Sistema de Gestión de Biblioteca Digital
+// FECHA: 28 de junio de 2025
+// DESARROLLADOR: Jose Andrade Zalamea
+
 package db
 
 import (
@@ -17,10 +21,10 @@ func Conectar() {
 
 	// Configuración de la conexión
 	username := "root"     // Usuario MySQL
-	password := ""         // Contraseña (vacía por defecto en XAMPP)
+	password := ""         // Contraseña esta vacía
 	host := "localhost"    // Host local
 	port := 3306           // Puerto por defecto de MySQL
-	dbname := "Biblioteca" // Tu base de datos
+	dbname := "Biblioteca" // Mi base de datos
 
 	// Cadena de conexión DSN
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true",
@@ -32,7 +36,7 @@ func Conectar() {
 		log.Fatal("❌ Error abriendo conexión con MySQL:", err)
 	}
 
-	// Verifica que la conexión esté viva
+	// Verifica que la conexión
 	err = tempDB.Ping()
 	if err != nil {
 		log.Fatal("❌ No se pudo conectar a MySQL:", err)
